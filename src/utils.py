@@ -90,6 +90,7 @@ def plot_self_vs_other(data: pd.core.frame.DataFrame) -> None:
 
     x_labels = ["first-place \ndeference", "second-place \ndeference", "third-place \ndeference"]
     plt.xticks(np.arange(len(x_labels))*3.25, x_labels, rotation=0)
+    plt.title("Deference – self vs. other")
     sns.despine()
     
 
@@ -137,7 +138,7 @@ def plot_deference_by_category(data: pd.core.frame.DataFrame) -> None:
     plt.ylabel("% of total respondents")
     x_labels = ["first-place \ndeference", "second-place \ndeference", "third-place \ndeference"]
     plt.xticks([1,5,9], x_labels, rotation=0)
-
+    plt.title("Deference by category")
     sns.despine()
     
 
@@ -236,17 +237,69 @@ def visualise_weighted_deference_(cc_1, cc_2, cc_3, include_self_responses: bool
     sns.despine()
 
 
+############################################################################
+### Plot clusters of individuals and organisations with correlated views ###
+############################################################################
 
 
-
-
-
-
-
-def void():
-    pass
-
-
+def plot_clusters(data: pd.core.series.Series, include_total: bool) -> None:
+    #data is always result_
+    # Specify the two clusters of people/organisations with correlated views
+    # c.f. Sam Clarke's discussion
+    results_group_1 = [data["Ajeya Cotra"], data["Paul Christiano"], data["Holden Karnofsky"],\
+                  data["Bioanchors"], data["Open Philanthropy"]]
+    results_group_2 = [data["Eliezer Yudkowsky"], data["MIRI"]]
+    x_labels_group_1 = ["Ajeya Cotra", "Holden Karnofsky", "Paul Christiano", "Bioanchors", "Open Philanthropy"]
+    x_labels_group_2 = ["Eliezer Yudkowsky", "MIRI"]
+    
+    if include_total:
+        x_labels_group_1_total = ["Total"] + x_labels_group_1
+        x_labels_group_2_total = ["Total"] + x_labels_group_2
+        results_group_1_total = [sum(results_group_1)] + results_group_1
+        results_group_2_total = [sum(results_group_2)] + results_group_2
+        clrs = ["darkmagenta", "purple", "purple"]
+        clrs_1 = ["grey", "lightgrey", "lightgrey", "lightgrey", "lightgrey", "lightgrey"]
+        clrs_2 = ["goldenrod", "papayawhip", "papayawhip"]
+        plt.bar(x=np.arange(len(x_labels_group_1_total)), height=results_group_1_total, color=clrs_1, alpha=1)
+        plt.bar(x=np.arange(len(x_labels_group_2_total))+7, height=results_group_2_total, color=clrs_2, alpha=1)
+        x_labels = x_labels_group_1_total + [" "] + x_labels_group_2_total
+        plt.xticks(np.arange(len(x_labels)), x_labels, rotation=90)
+        plt.ylabel("# responses across ranks")
+        # Demarcate group 1
+        plt.axhline(y=100, xmin=0.05, xmax=0.55, c='grey')
+        plt.axvline(x=-0.35, ymin=0.9, ymax=0.95, c='grey')
+        plt.axvline(x=5.05, ymin=0.9, ymax=0.95, c='grey')
+        plt.axvline(x=2.35, ymin=0.9525, ymax=0.97, c='grey', label="cluster 1")
+        # Demarcate group 2
+        plt.axhline(y=100, xmin=0.65, xmax=0.95, c='goldenrod')
+        plt.axvline(x=6.1, ymin=0.9, ymax=0.95, c='goldenrod')
+        plt.axvline(x=9.35, ymin=0.9, ymax=0.95, c='goldenrod')
+        plt.axvline(x=(9.35 + 6.1)/2, ymin=0.9525, ymax=0.97, c='goldenrod', label="cluster 2")
+        # Label the clusters
+        plt.annotate("cluster 1", (1.85, 103), xytext=None, fontsize=16, color='grey')
+        plt.annotate("cluster 2", (7.3, 103), xytext=None, fontsize=16, color='goldenrod')
+        sns.despine();
+    
+    else:
+        plt.bar(x=np.arange(len(x_labels_group_1)), height=results_group_1, color="grey", alpha=0.5)
+        plt.bar(x=np.arange(len(x_labels_group_2))+6, height=results_group_2, color="goldenrod", alpha=0.5)
+        x_labels = x_labels_group_1 + [" "] + x_labels_group_2
+        plt.xticks(np.arange(len(x_labels)), x_labels, rotation=90)
+        # Demarcate group 1
+        plt.axhline(y=60, xmin=0.05, xmax=0.5, c='grey')
+        plt.axvline(x=-0.35, ymin=0.9, ymax=0.95, c='grey')
+        plt.axvline(x=3.95, ymin=0.9, ymax=0.95, c='grey')
+        plt.axvline(x=1.8, ymin=0.9525, ymax=0.97, c='grey', label="cluster 1")
+        # Demarcate group 2
+        plt.axhline(y=60, xmin=0.665, xmax=0.95, c='goldenrod')
+        plt.axvline(x=5.525, ymin=0.9, ymax=0.95, c='goldenrod')
+        plt.axvline(x=8.3, ymin=0.9, ymax=0.95, c='goldenrod')
+        plt.axvline(x=(8.3 + 5.525)/2, ymin=0.9525, ymax=0.97, c='goldenrod', label="cluster 2")
+        # Label the clusters
+        plt.annotate("cluster 1", (1.4, 62), xytext=None, fontsize=16, color='grey')
+        plt.annotate("cluster 2", (6.5, 62), xytext=None, fontsize=16, color='goldenrod')
+        plt.ylabel("# responses across ranks")
+        sns.despine();
 
 
 
