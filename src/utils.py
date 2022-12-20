@@ -212,20 +212,26 @@ def combine_func(x, y):
     return x + y
 
 
-
-def visualise_weighted_deference(cc_1, cc_2, cc_3):
+def visualise_weighted_deference_(cc_1, cc_2, cc_3, include_self_responses: bool, xlim_: float):
+    default_plotting_params()
     plt.rcParams['figure.figsize'] = (18,10)
     result_scaled = functools.reduce(lambda x, y: x.combine(y, combine_func), [(3*cc_1), (2*cc_2), cc_3])
     result_scaled_ = result_scaled.sort_values(ascending=False)
-    result_scaled_drop_self = result_scaled_.drop("Self")
+    
+    if include_self_responses:
+        result_scaled_drop_self = result_scaled_
+    else:
+        result_scaled_drop_self = result_scaled_.drop("Myself")
 
     threshold = len(result_scaled_drop_self)
 
     plt.bar(x=np.arange(len(result_scaled_drop_self[:threshold])), height=result_scaled_drop_self[:threshold],\
-           edgecolor='k', linewidth=1, color='w')
+           edgecolor='k', linewidth=2, color='w')
 
     x_labels = result_scaled_drop_self.index.tolist()[:threshold]
     plt.xticks([elem for elem in np.arange(threshold)], x_labels, rotation=90)
+    plt.xlim(-1,(xlim_ + 0.5))
+    plt.ylabel("deference score \n(arbitrary units)")
 
     sns.despine()
 
