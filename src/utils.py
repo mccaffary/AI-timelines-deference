@@ -45,10 +45,12 @@ def column_titles() -> list:
 def load_data():
     timelines_deference = pd.read_csv("data/timelines_deference_survey.csv")
     timelines_deference_cleaned = pd.read_csv("data/timelines_deference_cleaned_.csv")
+    timelines_deference_cleaned_sam = pd.read_csv("data/timelines_deference_cleaned_sam_edit.csv") 
     timelines_deference_self_other = pd.read_csv("data/timelines_deferrence_self_other_cleaning_.csv")
-    timelines_deference_category = pd.read_csv("data/timelines_deferrence_category_cleaning_.csv")
+    #timelines_deference_category = pd.read_csv("data/timelines_deferrence_category_cleaning_.csv")
+    timelines_deference_category = pd.read_csv("data/timelines_deference_category_cleaning_revised.csv")
 
-    return timelines_deference, timelines_deference_cleaned, timelines_deference_self_other, timelines_deference_category
+    return timelines_deference, timelines_deference_cleaned, timelines_deference_cleaned_sam, timelines_deference_self_other, timelines_deference_category
 
 
 #####################################################
@@ -124,7 +126,7 @@ def generate_data_category(data: pd.core.frame.DataFrame) -> list:
     return individual_deference, group_deference, organisation_deference, total_response_category
     
     
-def plot_deference_by_category(data: pd.core.frame.DataFrame) -> None:
+def plot_deference_by_category_LEGACY(data: pd.core.frame.DataFrame) -> None:
     #Here, data is always timelines_deference_category
     plt.rcParams['figure.figsize'] = (12,9)
     individual_deference, group_deference, organisation_deference, total_response_category = generate_data_category(data)
@@ -140,7 +142,25 @@ def plot_deference_by_category(data: pd.core.frame.DataFrame) -> None:
     plt.xticks([1,5,9], x_labels, rotation=0)
     plt.title("Deference by category")
     sns.despine()
-    
+   
+
+def plot_deference_by_category(data: pd.core.frame.DataFrame) -> None:
+    #Here, data is always timelines_deference_category
+    plt.rcParams['figure.figsize'] = (12,9)
+    individual_deference, group_deference, organisation_deference, total_response_category = generate_data_category(data)
+    plt.bar(x=[0,3,6], height=[count2percentage(c, sum(total_response_category)) for c in individual_deference], \
+       label="individual", color="grey", alpha=0.45)
+    #plt.bar(x=[1,5,9], height=[count2percentage(c, sum(total_response_category)) for c in group_deference], \
+           #label="group", color="purple", alpha=0.45)
+    plt.bar(x=[1,4,7], height=[count2percentage(c, sum(total_response_category)) for c in organisation_deference], \
+           label="organisation", color="darkgreen", alpha=0.45)
+    plt.legend(labelcolor="linecolor")
+    plt.ylabel("% of total respondents")
+    x_labels = ["first-place \ndeference", "second-place \ndeference", "third-place \ndeference"]
+    plt.xticks([0.5, 3.5, 6.5], x_labels, rotation=0)
+    plt.title("Deference by category")
+    sns.despine()
+
 
 ##################################################
 ### Plot the responses for each deference rank ###
@@ -163,8 +183,8 @@ def generate_deference_counts(data: pd.core.frame.DataFrame) -> dict:
     return counts
 
 
+
 def visualise_deference_responses(deference_rank: int, data: pd.core.frame.DataFrame, include_self_responses: bool) -> None:
-    
     
     counts = generate_deference_counts(data)
     
@@ -222,7 +242,7 @@ def visualise_weighted_deference_(cc_1, cc_2, cc_3, include_self_responses: bool
     if include_self_responses:
         result_scaled_drop_self = result_scaled_
     else:
-        result_scaled_drop_self = result_scaled_.drop("Myself")
+        result_scaled_drop_self = result_scaled_.drop("Self")
 
     threshold = len(result_scaled_drop_self)
 
@@ -243,13 +263,13 @@ def visualise_weighted_deference_(cc_1, cc_2, cc_3, include_self_responses: bool
 
 
 def plot_clusters(data: pd.core.series.Series, include_total: bool) -> None:
-    #data is always result_
+    #data is always result_ in the case of this dataset...
     # Specify the two clusters of people/organisations with correlated views
     # c.f. Sam Clarke's discussion
     results_group_1 = [data["Ajeya Cotra"], data["Paul Christiano"], data["Holden Karnofsky"],\
-                  data["Bioanchors"], data["Open Philanthropy"]]
+                  data["Bioanchors"]]
     results_group_2 = [data["Eliezer Yudkowsky"], data["MIRI"]]
-    x_labels_group_1 = ["Ajeya Cotra", "Holden Karnofsky", "Paul Christiano", "Bioanchors", "Open Philanthropy"]
+    x_labels_group_1 = ["Ajeya Cotra", "Holden Karnofsky", "Paul Christiano", "Bioanchors"]
     x_labels_group_2 = ["Eliezer Yudkowsky", "MIRI"]
     
     if include_total:
@@ -303,5 +323,129 @@ def plot_clusters(data: pd.core.series.Series, include_total: bool) -> None:
 
 
 
+def plot_clusters_(data: pd.core.series.Series, include_total: bool) -> None:
+    #data is always result_ in the case of this dataset...
+    # Specify the two clusters of people/organisations with correlated views
+    # c.f. Sam Clarke's discussion
+    results_group_1 = [data["Ajeya Cotra"], data["Paul Christiano"], data["Holden Karnofsky"],\
+                  data["Bioanchors"]]
+    results_group_2 = [data["Eliezer Yudkowsky"], data["MIRI"]]
+    x_labels_group_1 = ["Ajeya Cotra", "Holden Karnofsky", "Paul Christiano", "Bioanchors"]
+    x_labels_group_2 = ["Eliezer Yudkowsky", "MIRI"]
+    
+    if include_total:
+        x_labels_group_1_total = ["Total"] + x_labels_group_1
+        x_labels_group_2_total = ["Total"] + x_labels_group_2
+        results_group_1_total = [sum(results_group_1)] + results_group_1
+        results_group_2_total = [sum(results_group_2)] + results_group_2
+        clrs = ["darkmagenta", "purple", "purple"]
+        clrs_1 = ["grey", "lightgrey", "lightgrey", "lightgrey", "lightgrey", "lightgrey"]
+        clrs_2 = ["goldenrod", "papayawhip", "papayawhip"]
+        plt.bar(x=np.arange(len(x_labels_group_1_total)), height=results_group_1_total, color=clrs_1, alpha=1)
+        plt.bar(x=np.arange(len(x_labels_group_2_total))+6, height=results_group_2_total, color=clrs_2, alpha=1)
+        x_labels = x_labels_group_1_total + [" "] + x_labels_group_2_total
+        plt.xticks(np.arange(len(x_labels)), x_labels, rotation=90)
+        plt.ylabel("# responses across ranks")
+        # Demarcate group 1
+        plt.axhline(y=100, xmin=0.05, xmax=0.5, c='grey')
+        plt.axvline(x=-0.35, ymin=0.9, ymax=0.95, c='grey')
+        plt.axvline(x=4.475, ymin=0.9, ymax=0.95, c='grey')
+        plt.axvline(x=((4.475 - 0.35)/2), ymin=0.9525, ymax=0.97, c='grey', label="cluster 1")
+        # Demarcate group 2
+        plt.axhline(y=100, xmin=0.6, xmax=0.95, c='goldenrod')
+        plt.axvline(x=5.55, ymin=0.9, ymax=0.95, c='goldenrod')
+        plt.axvline(x=9.34, ymin=0.9, ymax=0.95, c='goldenrod')
+        plt.axvline(x=(9.34 + 5.55)/2, ymin=0.9525, ymax=0.97, c='goldenrod', label="cluster 2")
+        # Label the clusters
+        plt.annotate("cluster 1", (1.75, 103), xytext=None, fontsize=16, color='grey')
+        plt.annotate("cluster 2", (7.15, 103), xytext=None, fontsize=16, color='goldenrod')
+        sns.despine();
+    
+    else:
+        plt.bar(x=np.arange(len(x_labels_group_1)), height=results_group_1, color="grey", alpha=0.5)
+        plt.bar(x=np.arange(len(x_labels_group_2))+5, height=results_group_2, color="goldenrod", alpha=0.5)
+        x_labels = x_labels_group_1 + [" "] + x_labels_group_2
+        plt.xticks(np.arange(len(x_labels)), x_labels, rotation=90)
+        # Demarcate group 1
+        plt.axhline(y=60, xmin=0.05, xmax=0.525, c='grey')
+        plt.axvline(x=-0.365, ymin=0.9, ymax=0.95, c='grey')
+        plt.axvline(x=3.2, ymin=0.9, ymax=0.95, c='grey')
+        plt.axvline(x=((3.2 - 0.365)/2), ymin=0.9525, ymax=0.97, c='grey', label="cluster 1")
+        # Demarcate group 2
+        plt.axhline(y=60, xmin=0.7, xmax=0.95, c='goldenrod')
+        plt.axvline(x=4.5, ymin=0.9, ymax=0.95, c='goldenrod')
+        plt.axvline(x=6.37, ymin=0.9, ymax=0.95, c='goldenrod')
+        plt.axvline(x=(6.37 + 4.5)/2, ymin=0.9525, ymax=0.97, c='goldenrod', label="cluster 2")
+        # Label the clusters
+        plt.annotate("cluster 1 (Open Philanthropy cluster)", (1.2, 62), xytext=None, fontsize=16, color='grey')
+        plt.annotate("cluster 2 (MIRI cluster)", (5.2, 62), xytext=None, fontsize=16, color='goldenrod')
+        plt.ylabel("# responses across ranks")
+        sns.despine();
 
 
+
+def plot_group_clusters(data: pd.core.series.Series, sort: bool) -> None:
+    
+    plt.rcParams['figure.figsize'] = (13,8)
+    # Define groups to be plotted
+    # Groups: OpenPhil, MIRI, Self, Forecasting, EveryoneElse
+    results_group_open_phil = [data["Ajeya Cotra"], data["Paul Christiano"], data["Holden Karnofsky"],\
+                                data["Bioanchors"]]
+    results_group_miri = [data["Eliezer Yudkowsky"], data["MIRI"]]
+    results_group_self = [data["Self"]]
+    results_group_forecasting = [data["Samotsvety"], data["Metaculus"]]
+    # Create a partially complete list[list[int]] data structure to check the number of deferences left over
+    result_groups = [results_group_open_phil, results_group_miri, results_group_self, results_group_forecasting]
+    results_group_everyone_else = [(sum(data)) - (sum([sum(group) for group in result_groups]))]
+    # Collect everything into one list (i.e. OpenPhil, MIRI, Self, Forecasting, EverythingElse clusters)
+    result_groups_with_everyone_else = result_groups + [results_group_everyone_else]
+    
+    # Group labels
+    #x_labels_group_1 = ["Ajeya Cotra", "Holden Karnofsky", "Paul Christiano", "Bioanchors"]
+    #x_labels_group_2 = ["Eliezer Yudkowsky", "MIRI"]
+    result_group_open_phil_label = ["Open Philanthropy"]
+    result_group_miri_label = ["MIRI"]
+    result_group_self_label = ["Self"]
+    result_group_forecasting_label = ["Forecasting"]
+    result_group_everyone_else_label = ["Everyone else"]
+    # Collect all labels into a list[str] for convenience
+    result_group_labels_all = ["Open Philanthropy", "MIRI", "Self", "Forecasting", "Everyone else"]
+    result_group_labels_all_sorted = ["Open Philanthropy", "Everyone else", "Self", "MIRI", "Forecasting"]
+    
+    # Total counts to plot for the five selected categories
+    total_counts_to_plot = [sum(group) for group in result_groups] + results_group_everyone_else
+    total_counts_to_plot_sorted = sorted(total_counts_to_plot, reverse=True)
+    
+    if sort:
+        clrs = ["darkred", "firebrick", "indianred", "lightcoral", "papayawhip"]
+        plt.bar(x=np.arange(len(total_counts_to_plot)), height=sorted(total_counts_to_plot, reverse=True), \
+               color=clrs, alpha=0.8)
+        x_labels = result_group_labels_all_sorted
+        plt.xticks(np.arange(len(x_labels)), x_labels, rotation=0)
+        # Add counts to the bars for readability
+        for i in range(len(total_counts_to_plot)):
+            plt.annotate(total_counts_to_plot_sorted[i], xy=((int(i) - 0.1), total_counts_to_plot_sorted[i] + 1), size=18)
+        # Labels and title
+        plt.ylim(0, 89)
+        plt.ylabel("# responses across ranks")
+        plt.xlabel("major clusters")
+        plt.title("Deference responses for some influential categories")
+        sns.despine()
+        
+    else:
+        plt.bar(x=np.arange(len(total_counts_to_plot)), height=total_counts_to_plot, color='grey', alpha=0.2)
+        x_labels = result_group_labels_all
+        plt.xticks(np.arange(len(x_labels)), x_labels, rotation=0)
+        #plt.axvline(1.5, linestyle="--", c='k')
+
+        # Add counts to the bars for readability
+        for i in range(len(total_counts_to_plot)):
+            plt.annotate(total_counts_to_plot[i], xy=((int(i) - 0.1), total_counts_to_plot[i] + 1), size=18)
+
+        # Labels and title
+        plt.ylim(0, 89)
+        plt.ylabel("# responses across ranks")
+        plt.xlabel("major clusters")
+        plt.title("Deference responses for some influential categories")
+        sns.despine()
+    
