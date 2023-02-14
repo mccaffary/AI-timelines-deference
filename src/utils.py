@@ -53,9 +53,9 @@ def load_data():
     return timelines_deference, timelines_deference_cleaned, timelines_deference_cleaned_sam, timelines_deference_self_other, timelines_deference_category
 
 
-#####################################################
-### Plot the data for "self" vs "other" deference ###
-#####################################################
+############################################################
+### Plot the data for "inside view" vs "other" deference ###
+############################################################
 
 def generate_data_self_vs_other(data: pd.core.frame.DataFrame) -> list:
     #Here, the data is always "timelines_deference_self_other"
@@ -75,14 +75,13 @@ def generate_data_self_vs_other(data: pd.core.frame.DataFrame) -> list:
     return self_deference, other_deference, total_respondents
 
 
-
-def plot_self_vs_other(data: pd.core.frame.DataFrame) -> None:
+def plot_inside_view_vs_other(data: pd.core.frame.DataFrame) -> None:
     #Here, the data is always "timelines_deference_self_other"
     plt.rcParams['figure.figsize'] = (12,9)
     self_deference, other_deference, total_respondents = generate_data_self_vs_other(data)
     
     plt.bar(x=[0,3,6], height=[count2percentage(c, sum(total_respondents)) for c in self_deference], \
-        color='grey', alpha=0.45, label="self")
+        color='grey', alpha=0.45, label="inside view")
 
     plt.bar(x=[1,4,7], height=[count2percentage(c, sum(total_respondents)) for c in other_deference], \
             color='purple', alpha=0.45, label="other")
@@ -92,9 +91,8 @@ def plot_self_vs_other(data: pd.core.frame.DataFrame) -> None:
 
     x_labels = ["first-place \ndeference", "second-place \ndeference", "third-place \ndeference"]
     plt.xticks(np.arange(len(x_labels))*3.25, x_labels, rotation=0)
-    plt.title("Deference – self vs. other")
-    sns.despine()
-    
+    plt.title("Deference – inside view vs. other")
+    sns.despine() 
 
 ############################################
 ### Plot the data for deference category ###
@@ -183,7 +181,6 @@ def generate_deference_counts(data: pd.core.frame.DataFrame) -> dict:
     return counts
 
 
-
 def visualise_deference_responses(deference_rank: int, data: pd.core.frame.DataFrame, include_self_responses: bool) -> None:
     
     counts = generate_deference_counts(data)
@@ -242,7 +239,7 @@ def visualise_weighted_deference_(cc_1, cc_2, cc_3, include_self_responses: bool
     if include_self_responses:
         result_scaled_drop_self = result_scaled_
     else:
-        result_scaled_drop_self = result_scaled_.drop("Self")
+        result_scaled_drop_self = result_scaled_.drop("Inside view")
 
     threshold = len(result_scaled_drop_self)
 
@@ -255,6 +252,7 @@ def visualise_weighted_deference_(cc_1, cc_2, cc_3, include_self_responses: bool
     plt.ylabel("deference score \n(arbitrary units)")
 
     sns.despine()
+
 
 
 ############################################################################
@@ -392,7 +390,7 @@ def plot_group_clusters(data: pd.core.series.Series, sort: bool) -> None:
     results_group_open_phil = [data["Ajeya Cotra"], data["Paul Christiano"], data["Holden Karnofsky"],\
                                 data["Bioanchors"]]
     results_group_miri = [data["Eliezer Yudkowsky"], data["MIRI"]]
-    results_group_self = [data["Self"]]
+    results_group_self = [data["Inside view"]]
     results_group_forecasting = [data["Samotsvety"], data["Metaculus"]]
     # Create a partially complete list[list[int]] data structure to check the number of deferences left over
     result_groups = [results_group_open_phil, results_group_miri, results_group_self, results_group_forecasting]
@@ -409,8 +407,8 @@ def plot_group_clusters(data: pd.core.series.Series, sort: bool) -> None:
     result_group_forecasting_label = ["Forecasting"]
     result_group_everyone_else_label = ["Everyone else"]
     # Collect all labels into a list[str] for convenience
-    result_group_labels_all = ["Open Philanthropy", "MIRI", "Self", "Forecasting", "Everyone else"]
-    result_group_labels_all_sorted = ["Open Philanthropy", "Everyone else", "Self", "MIRI", "Forecasting"]
+    result_group_labels_all = ["Open Philanthropy \n cluster", "MIRI \n cluster", "Inside view", "Samotsvety \n & Metaculus", "Everyone else"]
+    result_group_labels_all_sorted = ["Open Philanthropy \n cluster", "Everyone else", "Inside view", "MIRI \n cluster", " Samotsvety \n & Metaculus"]
     
     # Total counts to plot for the five selected categories
     total_counts_to_plot = [sum(group) for group in result_groups] + results_group_everyone_else
@@ -428,7 +426,7 @@ def plot_group_clusters(data: pd.core.series.Series, sort: bool) -> None:
         # Labels and title
         plt.ylim(0, 89)
         plt.ylabel("# responses across ranks")
-        plt.xlabel("major clusters")
+        #plt.xlabel("major clusters")
         plt.title("Deference responses for some influential categories")
         sns.despine()
         
@@ -445,7 +443,7 @@ def plot_group_clusters(data: pd.core.series.Series, sort: bool) -> None:
         # Labels and title
         plt.ylim(0, 89)
         plt.ylabel("# responses across ranks")
-        plt.xlabel("major clusters")
+        #plt.xlabel("major clusters")
         plt.title("Deference responses for some influential categories")
         sns.despine()
-    
+
