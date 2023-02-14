@@ -9,6 +9,7 @@ from typing import List
 import scipy.stats as stats 
 import itertools
 import functools
+from collections import Counter
 
 ######################################################
 ### Utility functions to make the notebook cleaner ###
@@ -435,7 +436,6 @@ def plot_group_clusters(data: pd.core.series.Series, sort: bool) -> None:
         x_labels = result_group_labels_all
         plt.xticks(np.arange(len(x_labels)), x_labels, rotation=0)
         #plt.axvline(1.5, linestyle="--", c='k')
-
         # Add counts to the bars for readability
         for i in range(len(total_counts_to_plot)):
             plt.annotate(total_counts_to_plot[i], xy=((int(i) - 0.1), total_counts_to_plot[i] + 1), size=18)
@@ -446,4 +446,97 @@ def plot_group_clusters(data: pd.core.series.Series, sort: bool) -> None:
         #plt.xlabel("major clusters")
         plt.title("Deference responses for some influential categories")
         sns.despine()
+
+
+
+def plot_group_clusters_first_rank_deference(data: pd.core.series.Series) -> None:
+    
+    _, _, timelines_deference_cleaned_sam_edit, _, _ = load_data()
+    first_deference = series2list(timelines_deference_cleaned_sam_edit["Who do you defer to most on AI timelines?"])
+    first_deference_nan_filter = [elem for elem in first_deference if type(elem) == str]
+    first_deference_counts = Counter(first_deference_nan_filter)
+    
+    first_deference_open_phil_cluster = first_deference_counts["Ajeya Cotra"] + \
+                                    first_deference_counts["Ajeya Cotra and Holden Karnofsky "] + \
+                                    first_deference_counts["Paul Christiano"] + \
+                                    first_deference_counts["Holden Karnofsky"] + \
+                                    first_deference_counts["Bioanchors"]
+
+    first_deference_miri_cluster = first_deference_counts["MIRI"] + first_deference_counts["Eliezer Yudkowsky"]
+    first_deference_inside_view = first_deference_counts["Inside view"]
+    first_deference_forecasting = first_deference_counts["Samotsvety"] + first_deference_counts["Metaculus"]
+    first_deference_everyone_else = len(first_deference_nan_filter) - (first_deference_open_phil_cluster + \
+                                                                       first_deference_miri_cluster + \
+                                                                       first_deference_inside_view + \
+                                                                       first_deference_forecasting)
+
+    first_deference_responses = [first_deference_open_phil_cluster, first_deference_miri_cluster, \
+                                first_deference_inside_view, first_deference_forecasting, first_deference_everyone_else]
+
+    assert sum(first_deference_responses) == len(first_deference_nan_filter)
+    
+    plt.rcParams['figure.figsize'] = (14,9)
+    default_plotting_params()
+    # Collect all labels into a list[str] for convenience
+    result_group_labels_all_sorted = ["Open Philanthropy \n cluster", "Inside view", "Everyone else", "MIRI \n cluster", " Samotsvety \n & Metaculus"]
+
+    clrs = ["darkred", "firebrick", "indianred", "lightcoral", "papayawhip"]
+
+    plt.bar(x=np.arange(len(first_deference_responses)), height=sorted(first_deference_responses, reverse=True), \
+           color=clrs, alpha=0.8)
+    x_labels = result_group_labels_all_sorted
+    plt.xticks(np.arange(len(x_labels)), x_labels, rotation=0)
+
+    # Add counts to the bars for readability
+    for i in range(len(first_deference_responses)):
+        plt.annotate(sorted(first_deference_responses, reverse=True)[i], xy=((int(i) - 0.1), sorted(first_deference_responses, reverse=True)[i] + 1), size=18)
+
+    # Labels and title
+    plt.ylim(0, 39)
+    plt.ylabel("# responses – \n Who do you defer to most on AI timelines?")
+    #plt.xlabel("major clusters")
+    plt.title("Deference responses for some influential categories")
+    sns.despine();
+
+
+def plot_group_clusters_deference_score(data: pd.core.series.Series) -> None:
+
+    _, _, timelines_deference_cleaned_sam_edit, _, _ = load_data()
+    counts = generate_deference_counts(timelines_deference_cleaned_sam_edit)
+    result_scaled = functools.reduce(lambda x, y: x.combine(y, combine_func), [(3*counts[column_titles()[0]]), (2*counts[column_titles()[1]]), counts[column_titles()[2]]])
+    result_scaled_ = result_scaled.sort_values(ascending=False)
+    result_scaled_open_philanthropy_cluster = result_scaled_["Ajeya Cotra"] + \
+                                            result_scaled_["Holden Karnofsky"] + \
+                                            result_scaled_["Bioanchors"] + \
+                                            result_scaled_["Paul Christiano"]
+
+    result_scaled_miri_cluster = result_scaled_["MIRI"] + result_scaled["Eliezer Yudkowsky"]
+    result_scaled_inside_view = result_scaled["Inside view"]
+    result_scaled_forecasting_cluster = result_scaled_["Metaculus"] + result_scaled_["Samotsvety"]
+    result_scaled_everyone_else = sum(result_scaled_) - (result_scaled_open_philanthropy_cluster + result_scaled_miri_cluster + result_scaled_inside_view + result_scaled_forecasting_cluster)
+
+    result_scaled_all = [result_scaled_open_philanthropy_cluster, result_scaled_miri_cluster, \
+                        result_scaled_inside_view, result_scaled_forecasting_cluster, result_scaled_everyone_else]
+
+    assert sum(result_scaled_) == sum(result_scaled_all)
+    plt.rcParams['figure.figsize'] = (14,9)
+    default_plotting_params()
+    result_group_labels_all_sorted = ["Open Philanthropy \n cluster", "Everyone else", "Inside view", "MIRI \n cluster", " Samotsvety \n & Metaculus"]
+    clrs = ["darkred", "firebrick", "indianred", "lightcoral", "papayawhip"]
+
+    plt.bar(x=np.arange(len(result_scaled_all)), height=sorted(result_scaled_all, reverse=True), \
+           color=clrs, alpha=0.8)
+    x_labels = result_group_labels_all_sorted
+    plt.xticks(np.arange(len(x_labels)), x_labels, rotation=0)
+
+    # Add counts to the bars for readability
+    for i in range(len(result_scaled_all)):
+        plt.annotate(sorted(result_scaled_all, reverse=True)[i], xy=((int(i) - 0.1), sorted(result_scaled_all, reverse=True)[i] + 1), size=18)
+
+    # Labels and title
+    #plt.ylim(0, )
+    plt.ylabel("deference score \n (arbitrary units)")
+    #plt.xlabel("major clusters")
+    plt.title("Deference score for some influential categories")
+    sns.despine();
 
