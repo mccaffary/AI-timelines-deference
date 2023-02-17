@@ -255,6 +255,29 @@ def visualise_weighted_deference_(cc_1, cc_2, cc_3, include_self_responses: bool
     sns.despine()
 
 
+def visualise_unweighted_deference_(cc_1, cc_2, cc_3, include_self_responses: bool, xlim_: float):
+    default_plotting_params()
+    plt.rcParams['figure.figsize'] = (18,10)
+    result_scaled = functools.reduce(lambda x, y: x.combine(y, combine_func), [(cc_1), (cc_2), (cc_3)])
+    result_scaled_ = result_scaled.sort_values(ascending=False)
+    
+    if include_self_responses:
+        result_scaled_drop_self = result_scaled_
+    else:
+        result_scaled_drop_self = result_scaled_.drop("Inside view")
+
+    threshold = len(result_scaled_drop_self)
+
+    plt.bar(x=np.arange(len(result_scaled_drop_self[:threshold])), height=result_scaled_drop_self[:threshold],\
+           edgecolor='k', linewidth=2, color='w')
+
+    x_labels = result_scaled_drop_self.index.tolist()[:threshold]
+    plt.xticks([elem for elem in np.arange(threshold)], x_labels, rotation=90)
+    plt.xlim(-1,(xlim_ + 0.5))
+    plt.ylabel("deference responses across ranks")
+
+    sns.despine()
+    
 
 ############################################################################
 ### Plot clusters of individuals and organisations with correlated views ###
@@ -450,7 +473,7 @@ def plot_group_clusters(data: pd.core.series.Series, sort: bool) -> None:
 
 
 def plot_group_clusters_first_rank_deference(data: pd.core.series.Series) -> None:
-    
+
     _, _, timelines_deference_cleaned_sam_edit, _, _ = load_data()
     first_deference = series2list(timelines_deference_cleaned_sam_edit["Who do you defer to most on AI timelines?"])
     first_deference_nan_filter = [elem for elem in first_deference if type(elem) == str]
