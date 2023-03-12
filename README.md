@@ -5,5 +5,5 @@ A very brief analysis of the [AI timlines deference survey](https://forum.effect
 ![Image description](figures/deference_responses_open_phil_vs_miri_clusters.png)
 > Some people and organisations have highly correlated views (as evidenced by co-authoring the same report or repeatedly expressing similar views in public). This figure shows the number of deference responses for two influential, but ideologically different, clusters.
 
-![Image description](figures/deference_responses_all_ranks_.png)
-> If we bin the overall responses into five main categories ("Open Philanthropy cluster", "MIRI cluster", "Inside view" responses, "Forecasting cluster", and simply "Everyone else" who received a deference, we get something that looks like this. Note that "Open Philanthropy cluster" = [Ajeya Cotra, Holden Karnofsky, Paul Christiano, and the Bioanchors report], "MIRI cluster" = [MIRI, Eliezer Yudkowsky], and "Forecasting cluster" = [Metaculus, Samotsvety].
+![Image description](figures/deference_responses_across_ranks_updated_.png)
+> If we bin the overall responses into six main categories ("Open Philanthropy cluster", "MIRI cluster", "Inside view" responses, deferences to "Daniel Kokotajlo", "Forecasting cluster", and simply "Everyone else" who received a deference, we get something that looks like this. Note that "Open Philanthropy cluster" = [Ajeya Cotra, Holden Karnofsky, Paul Christiano, and the Bioanchors report], "MIRI cluster" = [MIRI, Eliezer Yudkowsky], and "Forecasting cluster" = [Metaculus, Samotsvety].
