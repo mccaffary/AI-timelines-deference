@@ -415,11 +415,10 @@ def plot_group_clusters(data: pd.core.series.Series, sort: bool) -> None:
                                 data["Bioanchors"]]
     results_group_miri = [data["Eliezer Yudkowsky"], data["MIRI"]]
     results_group_self = [data["Inside view"]]
-    results_group_forecasting = [data["Samotsvety"], data["Metaculus"]]
+    #results_group_forecasting = [data["Samotsvety"], data["Metaculus"]]
     results_group_danielk = [data["Daniel Kokotajlo"]]
     # Create a partially complete list[list[int]] data structure to check the number of deferences left over
-    result_groups = [results_group_open_phil, results_group_miri, results_group_self, \
-                     results_group_forecasting, results_group_danielk]
+    result_groups = [results_group_open_phil, results_group_miri, results_group_self, results_group_danielk]
     results_group_everyone_else = [(sum(data)) - (sum([sum(group) for group in result_groups]))]
     # Collect everything into one list (i.e. OpenPhil, MIRI, Self, Forecasting, EverythingElse clusters)
     result_groups_with_everyone_else = result_groups + [results_group_everyone_else]
@@ -430,19 +429,19 @@ def plot_group_clusters(data: pd.core.series.Series, sort: bool) -> None:
     result_group_open_phil_label = ["Open Philanthropy"]
     result_group_miri_label = ["MIRI"]
     result_group_self_label = ["Self"]
-    result_group_forecasting_label = ["Forecasting"]
+    #result_group_forecasting_label = ["Forecasting"]
     result_group_everyone_else_label = ["Everyone else"]
     result_group_danielk = ["Daniel Kokotajlo"]
     # Collect all labels into a list[str] for convenience
-    result_group_labels_all = ["Open Philanthropy \n cluster", "MIRI \n cluster", "Inside view", "Samotsvety \n & Metaculus", "Everyone else"]
-    result_group_labels_all_sorted = ["Open\nPhilanthropy \n cluster", "Everyone\nelse", "Inside\nview", "Daniel\nKokotajlo","MIRI \n cluster", " Samotsvety \n & Metaculus"]
+    result_group_labels_all = ["Open Philanthropy \n cluster", "MIRI \n cluster", "Inside view", "Everyone else"]
+    result_group_labels_all_sorted = ["Open\nPhilanthropy \n cluster", "Everyone\nelse", "Inside\nview", "Daniel\nKokotajlo","MIRI \n cluster"]
     
     # Total counts to plot for the five selected categories
     total_counts_to_plot = [sum(group) for group in result_groups] + results_group_everyone_else
     total_counts_to_plot_sorted = sorted(total_counts_to_plot, reverse=True)
     
     if sort:
-        clrs = ["darkred", "firebrick", "indianred", "lightcoral", "papayawhip", "linen"]
+        clrs = ["darkred", "firebrick", "indianred", "lightcoral", "papayawhip"]
         plt.bar(x=np.arange(len(total_counts_to_plot)), height=sorted(total_counts_to_plot, reverse=True), \
                color=clrs, alpha=0.8, edgecolor="k")
         x_labels = result_group_labels_all_sorted
@@ -458,21 +457,20 @@ def plot_group_clusters(data: pd.core.series.Series, sort: bool) -> None:
         sns.despine()
         
     else:
-        plt.bar(x=np.arange(len(total_counts_to_plot)), height=total_counts_to_plot, color='grey', alpha=0.2)
-        x_labels = result_group_labels_all
-        plt.xticks(np.arange(len(x_labels)), x_labels, rotation=0)
+        #plt.bar(x=np.arange(len(total_counts_to_plot)), height=total_counts_to_plot, color='grey', alpha=0.2)
+        #x_labels = result_group_labels_all
+        #plt.xticks(np.arange(len(x_labels)), x_labels, rotation=0)
         #plt.axvline(1.5, linestyle="--", c='k')
         # Add counts to the bars for readability
-        for i in range(len(total_counts_to_plot)):
-            plt.annotate(total_counts_to_plot[i], xy=((int(i) - 0.1), total_counts_to_plot[i] + 1), size=18)
-
+        #for i in range(len(total_counts_to_plot)):
+            #plt.annotate(total_counts_to_plot[i], xy=((int(i) - 0.1), total_counts_to_plot[i] + 1), size=18)
         # Labels and title
-        plt.ylim(0, 89)
-        plt.ylabel("# responses across ranks")
+        #plt.ylim(0, 89)
+        #plt.ylabel("# responses across ranks")
         #plt.xlabel("major clusters")
-        plt.title("Deference responses for some influential categories")
-        sns.despine()
-
+        #plt.title("Deference responses for some influential categories")
+        #sns.despine()
+        raise NotImplementedError
 
 
 def plot_group_clusters_first_rank_deference(data: pd.core.series.Series) -> None:
@@ -490,17 +488,15 @@ def plot_group_clusters_first_rank_deference(data: pd.core.series.Series) -> Non
 
     first_deference_miri_cluster = first_deference_counts["MIRI"] + first_deference_counts["Eliezer Yudkowsky"]
     first_deference_inside_view = first_deference_counts["Inside view"]
-    first_deference_forecasting = first_deference_counts["Samotsvety"] + first_deference_counts["Metaculus"]
+    #first_deference_forecasting = first_deference_counts["Samotsvety"] + first_deference_counts["Metaculus"]
     first_deference_danielk = first_deference_counts["Daniel Kokotajlo"]
     first_deference_everyone_else = len(first_deference_nan_filter) - (first_deference_open_phil_cluster + \
                                                                        first_deference_miri_cluster + \
                                                                        first_deference_inside_view + \
-                                                                       first_deference_forecasting + \
                                                                        first_deference_danielk)
 
     first_deference_responses = [first_deference_open_phil_cluster, first_deference_miri_cluster, \
-                                first_deference_inside_view, first_deference_forecasting, \
-                                 first_deference_danielk, first_deference_everyone_else]
+                                first_deference_inside_view, first_deference_danielk, first_deference_everyone_else]
 
     assert sum(first_deference_responses) == len(first_deference_nan_filter)
     
@@ -508,9 +504,9 @@ def plot_group_clusters_first_rank_deference(data: pd.core.series.Series) -> Non
     default_plotting_params()
     # Collect all labels into a list[str] for convenience
     result_group_labels_all_sorted = ["Open\nPhilanthropy \n cluster", "Inside\nview", "Everyone\nelse", \
-                                      "MIRI \n cluster", " Samotsvety \n & Metaculus", "Daniel\nKokotajlo"]
+                                      "MIRI \n cluster", "Daniel\nKokotajlo"]
 
-    clrs = ["darkred", "firebrick", "indianred", "lightcoral", "papayawhip", "linen"]
+    clrs = ["darkred", "firebrick", "indianred", "lightcoral", "papayawhip"]
 
     plt.bar(x=np.arange(len(first_deference_responses)), height=sorted(first_deference_responses, reverse=True), \
            color=clrs, alpha=0.8, edgecolor="k")
@@ -527,6 +523,7 @@ def plot_group_clusters_first_rank_deference(data: pd.core.series.Series) -> Non
     #plt.xlabel("major clusters")
     plt.title("Deference responses for some influential categories")
     sns.despine();
+ 
 
 
 def plot_group_clusters_deference_score(data: pd.core.series.Series) -> None:
@@ -542,20 +539,19 @@ def plot_group_clusters_deference_score(data: pd.core.series.Series) -> None:
 
     result_scaled_miri_cluster = result_scaled_["MIRI"] + result_scaled["Eliezer Yudkowsky"]
     result_scaled_inside_view = result_scaled["Inside view"]
-    result_scaled_forecasting_cluster = result_scaled_["Metaculus"] + result_scaled_["Samotsvety"]
+    #result_scaled_forecasting_cluster = result_scaled_["Metaculus"] + result_scaled_["Samotsvety"]
     result_scaled_danielk = result_scaled_["Daniel Kokotajlo"]
-    result_scaled_everyone_else = sum(result_scaled_) - (result_scaled_open_philanthropy_cluster + result_scaled_miri_cluster + result_scaled_inside_view + result_scaled_forecasting_cluster + result_scaled_danielk)
+    result_scaled_everyone_else = sum(result_scaled_) - (result_scaled_open_philanthropy_cluster + result_scaled_miri_cluster + result_scaled_inside_view + result_scaled_danielk)
 
     result_scaled_all = [result_scaled_open_philanthropy_cluster, result_scaled_miri_cluster, \
-                        result_scaled_inside_view, result_scaled_forecasting_cluster, \
-                        result_scaled_danielk, result_scaled_everyone_else]
+                        result_scaled_inside_view, result_scaled_danielk, result_scaled_everyone_else]
 
     assert sum(result_scaled_) == sum(result_scaled_all)
     plt.rcParams['figure.figsize'] = (14,9)
     default_plotting_params()
     result_group_labels_all_sorted = ["Open\nPhilanthropy \n cluster", "Everyone\nelse", \
-                                      "Inside\nview", "Daniel\nKokotajlo", "MIRI \n cluster", " Samotsvety \n & Metaculus"]
-    clrs = ["darkred", "firebrick", "indianred", "lightcoral", "papayawhip", "linen"]
+                                      "Inside\nview", "Daniel\nKokotajlo", "MIRI \n cluster"]
+    clrs = ["darkred", "firebrick", "indianred", "lightcoral", "papayawhip"]
 
     plt.bar(x=np.arange(len(result_scaled_all)), height=sorted(result_scaled_all, reverse=True), \
            color=clrs, alpha=0.8, edgecolor="k")
@@ -572,4 +568,4 @@ def plot_group_clusters_deference_score(data: pd.core.series.Series) -> None:
     #plt.xlabel("major clusters")
     plt.title("Deference score for some influential categories")
     sns.despine();
-
+ 
